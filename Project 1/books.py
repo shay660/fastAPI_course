@@ -2,7 +2,6 @@ from fastapi import Body, FastAPI
 
 app = FastAPI()
 
-
 BOOKS = [
     {'title': 'Title One', 'author': 'Author One', 'category': 'science'},
     {'title': 'Title Two', 'author': 'Author Two', 'category': 'science'},
@@ -45,6 +44,17 @@ async def read_books_by_author_path(author: str):
     return books_to_return
 
 
+@app.get("/books/by_author/")
+async def get_author_book_with_category(author: str):
+    book_of_author = []
+    for book in BOOKS:
+        if book.get("author").casefold() == author.casefold():
+            book_of_author.append(book)
+
+    return book_of_author
+
+
+
 @app.get("/books/{book_author}/")
 async def read_author_category_by_query(book_author: str, category: str):
     books_to_return = []
@@ -64,7 +74,8 @@ async def create_book(new_book=Body()):
 @app.put("/books/update_book")
 async def update_book(updated_book=Body()):
     for i in range(len(BOOKS)):
-        if BOOKS[i].get('title').casefold() == updated_book.get('title').casefold():
+        if BOOKS[i].get('title').casefold() == updated_book.get(
+                'title').casefold():
             BOOKS[i] = updated_book
 
 
@@ -74,3 +85,12 @@ async def delete_book(book_title: str):
         if BOOKS[i].get('title').casefold() == book_title.casefold():
             BOOKS.pop(i)
             break
+
+
+@app.get("/books/byauthor/")
+async def get_author_dynamic(author: str):
+    books_of_author: list[dict[str: str]] = []
+    for book in BOOKS:
+        if book.get("author").casefold() == author.casefold():
+            books_of_author.append(book)
+    return books_of_author
